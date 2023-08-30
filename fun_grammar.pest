@@ -1,0 +1,29 @@
+// fun_file = { SOI ~ WHITESPACE* ~ fun_declaration ~ WHITESPACE* ~ EOI }
+
+// fun_declaration = { "fun" ~ identifier ~ "(" ~ ")" ~ "{" ~ "}" }
+
+// identifier = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+
+// log_statement = { ".log" ~ WHITESPACE+ ~ string }
+
+// string = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+
+// WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+
+fun_file = _{ SOI ~ (line_jump | fun_declaration)* ~ EOI }
+fun_declaration =  { "fun" ~ identifier ~ "(" ~ ")" ~ "{" ~ (statement | line_jump)+ ~ "}" }
+statement       =  { console_log | console_error | const_ass | symbol | let_ass }
+const_ass       =  { identifier ~ "=" ~ string }
+let_ass         =  { identifier ~ "mutable" ~ "=" ~ string }
+console_log     =  { ".log" ~ template_string }
+console_error   =  { ".error" ~ template_string }
+symbol          =  { ":" ~ identifier }
+template_string = ${ "\"" ~ ("$" ~ identifier ~ "" | (!"\"" ~ ANY))* ~ "\"" }
+string          = ${ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+WHITESPACE      = _{ " " }
+
+line_jump = _{ "\r" | "\n" }
+// INDENT = _{ "\t" | "  "}
+inner_string =  { string }
+identifier   = @{ ASCII_ALPHA+ }
+
